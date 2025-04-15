@@ -61,7 +61,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				idea: {
+					purple: '#9b87f5',
+					'purple-dark': '#7E69AB',
+					'purple-light': '#E5DEFF',
+					'soft-green': '#F2FCE2',
+					'soft-yellow': '#FEF7CD',
+					'soft-orange': '#FEC6A1',
+					'soft-pink': '#FFDEE2',
+					'soft-peach': '#FDE1D3',
+					'soft-blue': '#D3E4FD',
+					'soft-gray': '#F1F0FB',
 				}
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'hero-pattern': 'linear-gradient(to right bottom, rgba(236, 72, 153, 0.03), rgba(232, 121, 249, 0.03), rgba(168, 85, 247, 0.03), rgba(99, 102, 241, 0.03))',
+				'dot-pattern': 'radial-gradient(rgba(168, 85, 247, 0.15) 2px, transparent 2px)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
