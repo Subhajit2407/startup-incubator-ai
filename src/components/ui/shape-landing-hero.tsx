@@ -1,8 +1,9 @@
 
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import { Circle } from "lucide-react";
+import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 function ElegantShape({
@@ -72,9 +73,9 @@ function ElegantShape({
 }
 
 function HeroGeometric({
-    badge = "AI-Powered",
-    title1 = "Your Next Big",
-    title2 = "Startup Idea",
+    badge = "Design Collective",
+    title1 = "Elevate Your Digital Vision",
+    title2 = "Crafting Exceptional Websites",
     description = "Discover and validate startup ideas based on real-time market trends, tech shifts, and consumer needs.",
     children,
 }: {
@@ -82,7 +83,7 @@ function HeroGeometric({
     title1?: string;
     title2?: string;
     description?: string;
-    children?: React.ReactNode;
+    children?: ReactNode;
 }) {
     const fadeUpVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -98,8 +99,8 @@ function HeroGeometric({
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#030303]">
-            <div className="absolute inset-0 bg-gradient-to-br from-idea-purple/[0.05] via-transparent to-indigo-500/[0.05] blur-3xl" />
+        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#030303] pt-16">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-3xl" />
 
             <div className="absolute inset-0 overflow-hidden">
                 <ElegantShape
@@ -107,7 +108,7 @@ function HeroGeometric({
                     width={600}
                     height={140}
                     rotate={12}
-                    gradient="from-idea-purple/[0.15]"
+                    gradient="from-indigo-500/[0.15]"
                     className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
                 />
 
@@ -116,7 +117,7 @@ function HeroGeometric({
                     width={500}
                     height={120}
                     rotate={-15}
-                    gradient="from-violet-500/[0.15]"
+                    gradient="from-rose-500/[0.15]"
                     className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
                 />
 
@@ -125,7 +126,7 @@ function HeroGeometric({
                     width={300}
                     height={80}
                     rotate={-8}
-                    gradient="from-indigo-500/[0.15]"
+                    gradient="from-violet-500/[0.15]"
                     className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
                 />
 
@@ -134,7 +135,7 @@ function HeroGeometric({
                     width={200}
                     height={60}
                     rotate={20}
-                    gradient="from-blue-500/[0.15]"
+                    gradient="from-amber-500/[0.15]"
                     className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
                 />
 
@@ -143,13 +144,13 @@ function HeroGeometric({
                     width={150}
                     height={40}
                     rotate={-25}
-                    gradient="from-violet-500/[0.15]"
+                    gradient="from-cyan-500/[0.15]"
                     className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
                 />
             </div>
 
             <div className="relative z-10 container mx-auto px-4 md:px-6">
-                <div className="max-w-3xl mx-auto text-center mb-12">
+                <div className="max-w-3xl mx-auto text-center">
                     <motion.div
                         custom={0}
                         variants={fadeUpVariants}
@@ -157,7 +158,7 @@ function HeroGeometric({
                         animate="visible"
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12"
                     >
-                        <Circle className="h-2 w-2 fill-idea-purple/80" />
+                        <Circle className="h-2 w-2 fill-idea-purple" />
                         <span className="text-sm text-white/60 tracking-wide">
                             {badge}
                         </span>
@@ -190,12 +191,19 @@ function HeroGeometric({
                         initial="hidden"
                         animate="visible"
                     >
-                        <p className="text-base sm:text-lg md:text-xl text-white/40 mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
+                        <p className="text-base sm:text-lg md:text-xl text-white/60 mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
                             {description}
                         </p>
                     </motion.div>
-
-                    {children}
+                    
+                    <motion.div
+                        custom={3}
+                        variants={fadeUpVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        {children}
+                    </motion.div>
                 </div>
             </div>
 
@@ -204,4 +212,4 @@ function HeroGeometric({
     );
 }
 
-export { HeroGeometric, ElegantShape }
+export { HeroGeometric }

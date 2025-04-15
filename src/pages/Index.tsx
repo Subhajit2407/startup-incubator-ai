@@ -1,10 +1,10 @@
 
-import Layout from "@/components/layout/Layout";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 import { ArrowRight } from "lucide-react";
+import Layout from "@/components/layout/Layout";
 
 const HeroCodeSnippet = () => {
   return (
@@ -36,7 +36,6 @@ const Index = () => {
         badge="AI-Powered"
         title1="Your Next Big"
         title2="Startup Idea"
-        description="Discover and validate startup ideas based on real-time market trends, tech shifts, and consumer needs."
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg shadow-idea-purple/20 hover:shadow-idea-purple/40 transition-all" asChild>
