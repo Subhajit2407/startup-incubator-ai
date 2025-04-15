@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Zap, Activity, Briefcase, Lightbulb, Brain, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 type IdeaType = {
   name: string;
@@ -177,6 +178,7 @@ export default function IdeaGeneratorSection() {
   const [teamSize, setTeamSize] = useState<number[]>([3]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [generatedIdea, setGeneratedIdea] = useState<IdeaType | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("generate");
 
   const handleGenerate = () => {
     setIsGenerating(true);
@@ -210,81 +212,108 @@ export default function IdeaGeneratorSection() {
       
       setGeneratedIdea(customizedIdea);
       setIsGenerating(false);
+      setActiveTab("results");
     }, 2000);
   };
 
   return (
-    <section id="generator" className="py-24 bg-background relative">
-      <div className="absolute inset-0 bg-gradient-radial from-idea-purple-light/20 to-transparent opacity-60 z-0"></div>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 animate-fade-up">Idea Generator</h2>
-          <p className="text-xl text-foreground/70 animate-fade-up animation-delay-100">
-            Tell us about your interests and preferences, and our AI will generate a tailored startup idea with market validation.
-          </p>
-        </div>
-
-        <div className="max-w-4xl mx-auto">
-          <Card className="border-idea-purple/20 shadow-xl bg-card/80 backdrop-blur-sm">
-            <CardContent className="p-6 md:p-8">
-              <Tabs defaultValue="generate" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
-                  <TabsTrigger value="generate">Generate Idea</TabsTrigger>
-                  <TabsTrigger value="results">Results</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="generate" className="space-y-8">
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Areas of Interest</label>
-                      <Select value={category} onValueChange={setCategory}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All">All Categories</SelectItem>
-                          <SelectItem value="FinTech">FinTech</SelectItem>
-                          <SelectItem value="HealthTech">HealthTech</SelectItem>
-                          <SelectItem value="EdTech">EdTech</SelectItem>
-                          <SelectItem value="GreenTech">GreenTech</SelectItem>
-                          <SelectItem value="E-commerce">E-commerce</SelectItem>
-                          <SelectItem value="SaaS">SaaS</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Business Type</label>
-                      <Select value={businessType} onValueChange={setBusinessType}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select business type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All">All Types</SelectItem>
-                          <SelectItem value="Product">Product</SelectItem>
-                          <SelectItem value="Service">Service</SelectItem>
-                          <SelectItem value="Platform">Platform</SelectItem>
-                          <SelectItem value="Marketplace">Marketplace</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Team Size: {teamSize[0]}</label>
-                      <Slider
-                        defaultValue={[3]}
-                        max={10}
-                        min={1}
-                        step={1}
-                        value={teamSize}
-                        onValueChange={setTeamSize}
-                        className="py-4"
-                      />
-                    </div>
-                    
+    <motion.section 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      id="generator" 
+      className="relative z-10"
+    >
+      <div className="max-w-4xl mx-auto">
+        <Card className="border-idea-purple/20 shadow-xl bg-black/40 backdrop-blur-md border border-white/10">
+          <CardContent className="p-6 md:p-8">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-8 bg-black/60 border border-white/10">
+                <TabsTrigger 
+                  value="generate" 
+                  className="data-[state=active]:bg-idea-purple/20 data-[state=active]:text-white"
+                >
+                  Generate Idea
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="results" 
+                  className="data-[state=active]:bg-idea-purple/20 data-[state=active]:text-white"
+                >
+                  Results
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="generate" className="space-y-8">
+                <div className="space-y-6">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <label className="block text-sm font-medium mb-2 text-white/80">Areas of Interest</label>
+                    <Select value={category} onValueChange={setCategory}>
+                      <SelectTrigger className="w-full bg-black/60 border-white/10">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/90 border-white/10">
+                        <SelectItem value="All">All Categories</SelectItem>
+                        <SelectItem value="FinTech">FinTech</SelectItem>
+                        <SelectItem value="HealthTech">HealthTech</SelectItem>
+                        <SelectItem value="EdTech">EdTech</SelectItem>
+                        <SelectItem value="GreenTech">GreenTech</SelectItem>
+                        <SelectItem value="E-commerce">E-commerce</SelectItem>
+                        <SelectItem value="SaaS">SaaS</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <label className="block text-sm font-medium mb-2 text-white/80">Business Type</label>
+                    <Select value={businessType} onValueChange={setBusinessType}>
+                      <SelectTrigger className="w-full bg-black/60 border-white/10">
+                        <SelectValue placeholder="Select business type" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/90 border-white/10">
+                        <SelectItem value="All">All Types</SelectItem>
+                        <SelectItem value="Product">Product</SelectItem>
+                        <SelectItem value="Service">Service</SelectItem>
+                        <SelectItem value="Platform">Platform</SelectItem>
+                        <SelectItem value="Marketplace">Marketplace</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <label className="block text-sm font-medium mb-2 text-white/80">Team Size: {teamSize[0]}</label>
+                    <Slider
+                      defaultValue={[3]}
+                      max={10}
+                      min={1}
+                      step={1}
+                      value={teamSize}
+                      onValueChange={setTeamSize}
+                      className="py-4"
+                    />
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
                     <Button 
                       onClick={handleGenerate} 
-                      className="w-full py-6 text-lg"
+                      className="w-full py-6 text-lg bg-gradient-to-r from-idea-purple to-violet-500 hover:from-idea-purple hover:to-violet-600 border-none shadow-lg shadow-idea-purple/20"
                       disabled={isGenerating}
                     >
                       {isGenerating ? (
@@ -302,81 +331,140 @@ export default function IdeaGeneratorSection() {
                         </span>
                       )}
                     </Button>
+                  </motion.div>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="results">
+                {generatedIdea ? (
+                  <motion.div 
+                    className="space-y-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge className="bg-idea-purple text-white px-3 py-1">
+                        {generatedIdea.category}
+                      </Badge>
+                      <h3 className="text-2xl font-bold text-white">{generatedIdea.name}</h3>
+                    </div>
+                    
+                    <p className="text-lg text-white/80">{generatedIdea.pitch}</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-black/40 backdrop-blur-md border border-idea-purple/20 rounded-xl p-5 hover:border-idea-purple/40 transition-all"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Activity size={18} className="text-idea-purple" />
+                          <h4 className="font-medium text-white">Market Validation</h4>
+                        </div>
+                        <p className="text-sm text-white/70">{generatedIdea.marketValidation}</p>
+                      </motion.div>
+                      
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-black/40 backdrop-blur-md border border-idea-purple/20 rounded-xl p-5 hover:border-idea-purple/40 transition-all"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Briefcase size={18} className="text-idea-purple" />
+                          <h4 className="font-medium text-white">Revenue Model</h4>
+                        </div>
+                        <p className="text-sm text-white/70">{generatedIdea.revenueModel}</p>
+                      </motion.div>
+                      
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="bg-black/40 backdrop-blur-md border border-idea-purple/20 rounded-xl p-5 hover:border-idea-purple/40 transition-all"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Lightbulb size={18} className="text-idea-purple" />
+                          <h4 className="font-medium text-white">MVP Features</h4>
+                        </div>
+                        <ul className="list-disc pl-5 text-sm space-y-1 text-white/70">
+                          {generatedIdea.mvpFeatures.map((feature, index) => (
+                            <li key={index}>{feature}</li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                      
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-black/40 backdrop-blur-md border border-idea-purple/20 rounded-xl p-5 hover:border-idea-purple/40 transition-all"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Zap size={18} className="text-idea-purple" />
+                          <h4 className="font-medium text-white">Tech Stack</h4>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {generatedIdea.techStack.map((tech, index) => (
+                            <Badge key={index} variant="outline" className="bg-black/60 border-white/10 text-white/70">
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </div>
+                    
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-black/40 backdrop-blur-md border border-idea-purple/20 rounded-xl p-5 mt-6 hover:border-idea-purple/40 transition-all"
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <Brain size={18} className="text-idea-purple" />
+                        <h4 className="font-medium text-white">AI Use Case</h4>
+                      </div>
+                      <p className="text-sm text-white/70">{generatedIdea.aiUseCase}</p>
+                    </motion.div>
+                    
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="text-center bg-gradient-to-r from-idea-purple/10 to-violet-500/10 rounded-xl p-6 mt-6"
+                    >
+                      <p className="text-xl italic font-medium text-white">"{generatedIdea.slogan}"</p>
+                    </motion.div>
+                    
+                    <div className="flex justify-center gap-4 mt-8">
+                      <Button
+                        onClick={handleGenerate}
+                        className="px-6 bg-gradient-to-r from-idea-purple to-violet-500 hover:from-idea-purple hover:to-violet-600 border-none shadow-lg shadow-idea-purple/20"
+                      >
+                        Generate New Idea
+                      </Button>
+                      
+                      <Button variant="outline" className="px-6 border-white/10 bg-black/40 text-white hover:bg-white/5">
+                        <span className="flex items-center gap-2">
+                          Create Sitemap <ChevronRight size={16} />
+                        </span>
+                      </Button>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-lg text-white/60">
+                      No idea generated yet. Go to the Generate tab to create your first idea!
+                    </p>
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="results">
-                  {generatedIdea ? (
-                    <div className="space-y-6 animate-fade-up">
-                      <div className="flex items-center gap-3">
-                        <Badge className="bg-idea-purple px-3 py-1">
-                          {generatedIdea.category}
-                        </Badge>
-                        <h3 className="text-2xl font-bold">{generatedIdea.name}</h3>
-                      </div>
-                      
-                      <p className="text-lg">{generatedIdea.pitch}</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                        <div className="bg-idea-soft-blue rounded-xl p-4">
-                          <h4 className="font-medium mb-2">Market Validation</h4>
-                          <p className="text-sm">{generatedIdea.marketValidation}</p>
-                        </div>
-                        
-                        <div className="bg-idea-soft-green rounded-xl p-4">
-                          <h4 className="font-medium mb-2">Revenue Model</h4>
-                          <p className="text-sm">{generatedIdea.revenueModel}</p>
-                        </div>
-                        
-                        <div className="bg-idea-soft-yellow rounded-xl p-4">
-                          <h4 className="font-medium mb-2">MVP Features</h4>
-                          <ul className="list-disc pl-5 text-sm space-y-1">
-                            {generatedIdea.mvpFeatures.map((feature, index) => (
-                              <li key={index}>{feature}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div className="bg-idea-soft-peach rounded-xl p-4">
-                          <h4 className="font-medium mb-2">Tech Stack</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {generatedIdea.techStack.map((tech, index) => (
-                              <Badge key={index} variant="outline" className="bg-white/50">
-                                {tech}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-idea-soft-pink rounded-xl p-4 mt-6">
-                        <h4 className="font-medium mb-2">AI Use Case</h4>
-                        <p className="text-sm">{generatedIdea.aiUseCase}</p>
-                      </div>
-                      
-                      <div className="text-center bg-idea-purple/10 rounded-xl p-6 mt-6">
-                        <p className="text-xl italic font-medium">"{generatedIdea.slogan}"</p>
-                      </div>
-                      
-                      <div className="flex justify-center mt-8">
-                        <Button onClick={handleGenerate} className="px-8">
-                          Generate New Idea
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <p className="text-lg text-foreground/60">
-                        No idea generated yet. Go to the Generate tab to create your first idea!
-                      </p>
-                    </div>
-                  )}
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       </div>
-    </section>
+    </motion.section>
   );
 }
