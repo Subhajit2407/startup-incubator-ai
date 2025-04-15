@@ -20,41 +20,156 @@ type IdeaType = {
   category: string;
 };
 
-const sampleIdeas: IdeaType[] = [
-  {
-    name: "HealthHub",
-    pitch: "AI-powered health monitoring platform that predicts potential health issues before they become serious.",
-    marketValidation: "The global digital health market is projected to reach $639.4 billion by 2026, growing at 13.4% CAGR.",
-    mvpFeatures: ["Health data integration", "AI prediction engine", "Alert system", "Doctor connectivity"],
-    revenueModel: "Freemium with paid premium features, B2B healthcare provider partnerships",
-    techStack: ["React Native", "TensorFlow", "AWS Lambda", "MongoDB", "HealthKit API"],
-    aiUseCase: "Predictive analytics for early health issue detection based on wearable data",
-    slogan: "Your Health, Predicted",
-    category: "HealthTech"
+// Expanded sample ideas categorized by business domain and type
+const sampleIdeas: Record<string, Record<string, IdeaType[]>> = {
+  "All": {
+    "All": [
+      {
+        name: "HealthHub",
+        pitch: "AI-powered health monitoring platform that predicts potential health issues before they become serious.",
+        marketValidation: "The global digital health market is projected to reach $639.4 billion by 2026, growing at 13.4% CAGR.",
+        mvpFeatures: ["Health data integration", "AI prediction engine", "Alert system", "Doctor connectivity"],
+        revenueModel: "Freemium with paid premium features, B2B healthcare provider partnerships",
+        techStack: ["React Native", "TensorFlow", "AWS Lambda", "MongoDB", "HealthKit API"],
+        aiUseCase: "Predictive analytics for early health issue detection based on wearable data",
+        slogan: "Your Health, Predicted",
+        category: "HealthTech"
+      },
+      {
+        name: "EduMentor AI",
+        pitch: "Personalized education platform that adapts to each student's learning style and pace.",
+        marketValidation: "The EdTech market size is expected to reach $605.4 billion by 2027, growing at 15.52% CAGR.",
+        mvpFeatures: ["Learning style assessment", "Adaptive curriculum", "Progress tracking", "Parent dashboard"],
+        revenueModel: "Subscription model with tiered pricing for schools and individual users",
+        techStack: ["Next.js", "Python ML", "Firebase", "Node.js", "GPT-4"],
+        aiUseCase: "Natural language processing to understand student responses and adapt teaching methods",
+        slogan: "Education, Evolved",
+        category: "EdTech"
+      },
+      {
+        name: "GreenTrace",
+        pitch: "Carbon footprint tracking app that helps businesses meet sustainability goals with actionable insights.",
+        marketValidation: "The carbon footprint management market is expected to grow to $12.2 billion by 2025 with increasing regulatory pressure.",
+        mvpFeatures: ["Carbon calculator", "Sustainability recommendations", "Progress reports", "Certification support"],
+        revenueModel: "SaaS model with tiered pricing based on company size and features",
+        techStack: ["React", "Django", "PostgreSQL", "Docker", "Carbon API"],
+        aiUseCase: "Machine learning to optimize carbon reduction strategies and predict outcomes",
+        slogan: "Track, Reduce, Sustain",
+        category: "GreenTech"
+      }
+    ]
   },
-  {
-    name: "EduMentor AI",
-    pitch: "Personalized education platform that adapts to each student's learning style and pace.",
-    marketValidation: "The EdTech market size is expected to reach $605.4 billion by 2027, growing at 15.52% CAGR.",
-    mvpFeatures: ["Learning style assessment", "Adaptive curriculum", "Progress tracking", "Parent dashboard"],
-    revenueModel: "Subscription model with tiered pricing for schools and individual users",
-    techStack: ["Next.js", "Python ML", "Firebase", "Node.js", "GPT-4"],
-    aiUseCase: "Natural language processing to understand student responses and adapt teaching methods",
-    slogan: "Education, Evolved",
-    category: "EdTech"
+  "FinTech": {
+    "Platform": [
+      {
+        name: "SplitPay Hub",
+        pitch: "Platform that enables marketplaces and service providers to seamlessly split payments among multiple stakeholders in real-time.",
+        marketValidation: "With the rise of multi-vendor platforms, there's a growing need for efficient payment splitting solutions with a market size of $10.5B by 2028.",
+        mvpFeatures: ["User onboarding and KYC verification", "Real-time payment splitting", "Dashboard for transaction tracking", "Integration with major payment gateways"],
+        revenueModel: "Transaction fees, subscription plans for premium features, and white-label solutions for enterprise clients",
+        techStack: ["React.js", "Node.js with Express", "MongoDB", "Stripe API", "TensorFlow"],
+        aiUseCase: "Utilizes AI to predict transaction patterns and optimize fund distribution among stakeholders",
+        slogan: "Empowering seamless financial collaboration",
+        category: "FinTech"
+      },
+      {
+        name: "CryptoLend",
+        pitch: "Decentralized lending platform connecting crypto holders with borrowers through smart contracts and competitive interest rates.",
+        marketValidation: "DeFi lending market has grown to over $20 billion in total value locked (TVL) with continued adoption from traditional finance.",
+        mvpFeatures: ["Wallet integration", "Smart contract lending pools", "Interest rate calculator", "Risk assessment tools"],
+        revenueModel: "Service fees on loans, premium risk analytics, institutional partnerships",
+        techStack: ["Solidity", "React", "Node.js", "The Graph", "ChainLink"],
+        aiUseCase: "AI risk assessment models to determine optimal loan terms and minimize defaults",
+        slogan: "Unlock the Value of Your Digital Assets",
+        category: "FinTech"
+      }
+    ],
+    "Service": [
+      {
+        name: "TaxSmart AI",
+        pitch: "AI-powered tax planning service that continuously monitors financial activity to maximize tax efficiency for freelancers and small businesses.",
+        marketValidation: "The global tax management software market is expected to reach $11.19 billion by 2027, growing at 10.4% CAGR.",
+        mvpFeatures: ["Financial account integration", "Real-time tax estimation", "Deduction finder", "Custom tax calendar"],
+        revenueModel: "Monthly subscription, premium consultations, enterprise plans for accountants",
+        techStack: ["Python", "TensorFlow", "React", "AWS", "Plaid API"],
+        aiUseCase: "Machine learning to identify tax-saving opportunities based on spending patterns and business activities",
+        slogan: "Never Overpay Taxes Again",
+        category: "FinTech"
+      }
+    ],
+    "Product": [
+      {
+        name: "BudgetBuddy",
+        pitch: "AI financial assistant that gamifies saving and helps users achieve financial goals through personalized challenges.",
+        marketValidation: "Personal finance app market is growing at 15% annually, with increased demand for engaging, gamified experiences.",
+        mvpFeatures: ["Bank account integration", "Personalized saving challenges", "Achievement system", "Financial coaching"],
+        revenueModel: "Freemium model with premium features, financial partner referrals",
+        techStack: ["Flutter", "Firebase", "Node.js", "MongoDB", "Plaid API"],
+        aiUseCase: "Using AI to create personalized saving challenges based on spending patterns and income predictability",
+        slogan: "Making Saving Fun",
+        category: "FinTech"
+      }
+    ]
   },
-  {
-    name: "GreenTrace",
-    pitch: "Carbon footprint tracking app that helps businesses meet sustainability goals with actionable insights.",
-    marketValidation: "The carbon footprint management market is expected to grow to $12.2 billion by 2025 with increasing regulatory pressure.",
-    mvpFeatures: ["Carbon calculator", "Sustainability recommendations", "Progress reports", "Certification support"],
-    revenueModel: "SaaS model with tiered pricing based on company size and features",
-    techStack: ["React", "Django", "PostgreSQL", "Docker", "Carbon API"],
-    aiUseCase: "Machine learning to optimize carbon reduction strategies and predict outcomes",
-    slogan: "Track, Reduce, Sustain",
-    category: "GreenTech"
+  "HealthTech": {
+    "Platform": [
+      {
+        name: "MediMatch",
+        pitch: "Platform connecting patients with the right specialists based on symptoms, medical history, and doctor expertise.",
+        marketValidation: "The healthcare IT market size is estimated to reach $390.7 billion by 2024, growing at a CAGR of 15.8%.",
+        mvpFeatures: ["Symptom analysis", "Doctor matching algorithm", "Video consultations", "Medical record sharing"],
+        revenueModel: "Commission from providers, premium subscription for priority matching and features",
+        techStack: ["React Native", "Node.js", "AWS", "MongoDB", "FHIR API"],
+        aiUseCase: "Natural language processing to analyze symptoms and match with appropriate medical specialists",
+        slogan: "The Right Doctor, Right Away",
+        category: "HealthTech"
+      }
+    ],
+    "All": [
+      {
+        name: "SleepSync",
+        pitch: "Advanced sleep tracking and optimization system using non-invasive sensors to improve sleep quality and overall health.",
+        marketValidation: "The sleep tech devices market is expected to reach $27 billion by 2025, growing at 15.7% CAGR.",
+        mvpFeatures: ["Sleep pattern analysis", "Environmental optimization", "Personalized recommendations", "Health data integration"],
+        revenueModel: "Hardware sales, premium subscription for advanced insights and coaching",
+        techStack: ["Embedded systems", "Flutter", "Python ML", "AWS IoT", "HealthKit"],
+        aiUseCase: "AI algorithms identify optimal sleep conditions based on user data and environmental factors",
+        slogan: "Sleep Better, Live Better",
+        category: "HealthTech"
+      }
+    ]
+  },
+  "EdTech": {
+    "All": [
+      {
+        name: "SkillForge",
+        pitch: "Adaptive learning platform that creates personalized curriculum paths based on career goals and learning pace.",
+        marketValidation: "The professional development market size is projected to reach $455.5 billion by 2026, growing at 9.2% CAGR.",
+        mvpFeatures: ["Skill assessment", "Career path mapping", "Custom curriculum generator", "Progress tracking"],
+        revenueModel: "B2C subscription, B2B enterprise licensing for companies, content partnerships",
+        techStack: ["Next.js", "GraphQL", "Python AI", "PostgreSQL", "LMS API integration"],
+        aiUseCase: "Machine learning to assess skill gaps and design optimal learning pathways for career transitions",
+        slogan: "Your Path, Your Pace",
+        category: "EdTech"
+      }
+    ]
+  },
+  "GreenTech": {
+    "All": [
+      {
+        name: "EcoChain",
+        pitch: "Blockchain-based supply chain platform enabling businesses to verify and showcase their sustainability practices.",
+        marketValidation: "The green technology market is expected to reach $51.09 billion by 2029, growing at 20.3% CAGR.",
+        mvpFeatures: ["Supply chain tracking", "Carbon footprint calculator", "Sustainability certificates", "Consumer facing transparency portal"],
+        revenueModel: "SaaS subscription for businesses, certification services, data analytics packages",
+        techStack: ["Solidity", "React", "Node.js", "MongoDB", "IoT sensors"],
+        aiUseCase: "AI to analyze supply chain data and identify opportunities for reducing environmental impact",
+        slogan: "Verifiable Sustainability for the Modern Business",
+        category: "GreenTech"
+      }
+    ]
   }
-];
+};
 
 export default function IdeaGeneratorSection() {
   const [category, setCategory] = useState<string>("All");
@@ -68,9 +183,32 @@ export default function IdeaGeneratorSection() {
     
     // Simulate API call with timeout
     setTimeout(() => {
-      // Randomly select one of the sample ideas
-      const randomIdea = sampleIdeas[Math.floor(Math.random() * sampleIdeas.length)];
-      setGeneratedIdea(randomIdea);
+      // Try to get ideas matching both category and business type
+      let ideas = sampleIdeas[category]?.[businessType];
+      
+      // If no exact match, try to get ideas for the category with "All" business type
+      if (!ideas || ideas.length === 0) {
+        ideas = sampleIdeas[category]?.["All"];
+      }
+      
+      // If still no match, fall back to general ideas
+      if (!ideas || ideas.length === 0) {
+        ideas = sampleIdeas["All"]["All"];
+      }
+      
+      // Select a random idea from the available ones
+      const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
+      
+      // Adjust the idea based on team size
+      const customizedIdea = { 
+        ...randomIdea,
+        // Adjust pitch based on team size - larger teams can handle more complex ideas
+        pitch: teamSize[0] > 5 
+          ? `${randomIdea.pitch} Ideal for teams with diverse expertise.` 
+          : randomIdea.pitch,
+      };
+      
+      setGeneratedIdea(customizedIdea);
       setIsGenerating(false);
     }, 2000);
   };
@@ -105,9 +243,9 @@ export default function IdeaGeneratorSection() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="All">All Categories</SelectItem>
+                          <SelectItem value="FinTech">FinTech</SelectItem>
                           <SelectItem value="HealthTech">HealthTech</SelectItem>
                           <SelectItem value="EdTech">EdTech</SelectItem>
-                          <SelectItem value="FinTech">FinTech</SelectItem>
                           <SelectItem value="GreenTech">GreenTech</SelectItem>
                           <SelectItem value="E-commerce">E-commerce</SelectItem>
                           <SelectItem value="SaaS">SaaS</SelectItem>
