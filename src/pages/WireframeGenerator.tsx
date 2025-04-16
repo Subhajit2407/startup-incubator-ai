@@ -70,11 +70,11 @@ const ColorPicker = ({ color, onChange, allowTransparent = false }: { color: str
         className="w-full h-8 cursor-pointer"
       />
       <div className="flex items-center mt-2">
-        <span className="text-xs mr-2">Hex:</span>
+        <span className="text-xs mr-2 text-black dark:text-white">Hex:</span>
         <Input 
           value={displayColor} 
           onChange={(e) => onChange(e.target.value)}
-          className="w-full h-8 px-2 border rounded text-sm" 
+          className="w-full h-8 px-2 border rounded text-sm text-black" 
         />
       </div>
       {allowTransparent && (
@@ -86,7 +86,7 @@ const ColorPicker = ({ color, onChange, allowTransparent = false }: { color: str
             onChange={(e) => onChange(e.target.checked ? 'transparent' : displayColor)}
             className="mr-2"
           />
-          <Label htmlFor="transparent" className="text-xs">Transparent</Label>
+          <Label htmlFor="transparent" className="text-xs text-black dark:text-white">Transparent</Label>
         </div>
       )}
     </div>
@@ -203,6 +203,26 @@ const componentCategories = [
 const exportCanvasAsImage = (canvas: fabric.Canvas, filename: string) => {
   if (!canvas) return;
   
+  // Store original text colors
+  const textObjects = canvas.getObjects().filter(obj => 
+    obj.type === 'textbox' || obj.type === 'text' || obj.type === 'i-text'
+  );
+  
+  const originalColors = textObjects.map(obj => ({
+    object: obj,
+    fill: obj.fill
+  }));
+  
+  // Set all white text to black for better visibility on export
+  textObjects.forEach(obj => {
+    if (obj.fill === '#ffffff' || obj.fill === 'white' || obj.fill === 'rgb(255,255,255)') {
+      obj.set('fill', '#000000');
+    }
+  });
+  
+  canvas.renderAll();
+  
+  // Generate and download the image
   const dataURL = canvas.toDataURL({
     format: 'png',
     quality: 1
@@ -212,6 +232,13 @@ const exportCanvasAsImage = (canvas: fabric.Canvas, filename: string) => {
   link.download = filename;
   link.href = dataURL;
   link.click();
+  
+  // Restore original colors
+  originalColors.forEach(item => {
+    item.object.set('fill', item.fill);
+  });
+  
+  canvas.renderAll();
 };
 
 // Generate unique ID helper function
@@ -1015,7 +1042,41 @@ const WireframeGenerator = () => {
     
     setTimeout(() => {
       if (canvasRef.current) {
-        exportCanvasAsImage(canvasRef.current, `${projectName.replace(/\s+/g, '-').toLowerCase()}-${currentPage.name.replace(/\s+/g, '-').toLowerCase()}.png`);
+        try {
+          // Ensure text elements have black color for visibility on white background
+          const canvas = canvasRef.current;
+          const textObjects = canvas.getObjects().filter(obj => 
+            obj.type === 'textbox' || obj.type === 'text' || obj.type === 'i-text'
+          );
+          
+          // Store original colors to restore later
+          const originalColors = textObjects.map(obj => ({
+            object: obj,
+            fill: obj.fill
+          }));
+          
+          // Set all text to black for export
+          textObjects.forEach(obj => {
+            if (obj.fill === '#ffffff' || obj.fill === 'white' || obj.fill === 'rgb(255,255,255)') {
+              obj.set('fill', '#000000');
+            }
+          });
+          
+          canvas.renderAll();
+          
+          // Export the image
+          exportCanvasAsImage(canvas, `${projectName.replace(/\s+/g, '-').toLowerCase()}-${currentPage.name.replace(/\s+/g, '-').toLowerCase()}.png`);
+          
+          // Restore original colors
+          originalColors.forEach(item => {
+            item.object.set('fill', item.fill);
+          });
+          
+          canvas.renderAll();
+        } catch (error) {
+          console.error('Error exporting wireframe:', error);
+          alert('Failed to export wireframe. Please try again.');
+        }
       }
       
       // Restore grid
@@ -1026,6 +1087,38 @@ const WireframeGenerator = () => {
       
       setIsExporting(false);
     }, 100);
+  };
+  
+  // Helper function to export canvas as JSON
+  const exportCanvasAsJSON = () => {
+    if (!canvasRef.current) return;
+    
+    // Update current page from canvas
+    updatePageElements();
+    
+    // Create JSON data
+    const jsonData = {
+      name: projectName,
+      pages,
+      lastEdited: new Date().toISOString()
+    };
+    
+    // Convert to JSON string
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    
+    // Create blob and download
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.download = `${projectName.replace(/\s+/g, '-').toLowerCase()}.json`;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up URL object
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   };
   
   // Save project
@@ -1042,11 +1135,14 @@ const WireframeGenerator = () => {
     
     localStorage.setItem('wireframe-project', JSON.stringify(projectData));
     
+    // Also offer to download as JSON file
+    exportCanvasAsJSON();
+    
     // Show confirmation
     alert('Project saved successfully!');
   };
   
-  // Load project
+  // Load project from localStorage
   const loadProject = () => {
     const savedProject = localStorage.getItem('wireframe-project');
     
@@ -1061,12 +1157,75 @@ const WireframeGenerator = () => {
       setPages(projectData.pages || []);
       setCurrentPageIndex(0);
       
+      // Force canvas refresh after loading
+      setTimeout(() => {
+        if (canvasRef.current && projectData.pages[0].canvasJson) {
+          canvasRef.current.loadFromJSON(projectData.pages[0].canvasJson, () => {
+            canvasRef.current?.renderAll();
+            // Add to history after loading
+            addToHistory();
+          });
+        }
+      }, 100);
+      
       // Success message
       alert('Project loaded successfully!');
     } catch (error) {
       console.error('Error loading project:', error);
       alert('Error loading project. Please try again.');
     }
+  };
+  
+  // Load project from file
+  const loadProjectFromFile = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          const projectData = JSON.parse(content);
+          
+          // Validate the imported data has the expected structure
+          if (!projectData.name || !Array.isArray(projectData.pages)) {
+            throw new Error('Invalid project file format');
+          }
+          
+          setProjectName(projectData.name);
+          setPages(projectData.pages);
+          setCurrentPageIndex(0);
+          
+          // Also save to localStorage for backup
+          localStorage.setItem('wireframe-project', content);
+          
+          // Force canvas refresh after loading
+          setTimeout(() => {
+            if (canvasRef.current && projectData.pages[0].canvasJson) {
+              canvasRef.current.loadFromJSON(projectData.pages[0].canvasJson, () => {
+                canvasRef.current?.renderAll();
+                // Add to history after loading
+                addToHistory();
+              });
+            }
+          }, 100);
+          
+          alert('Project imported successfully!');
+        } catch (error) {
+          console.error('Error importing project:', error);
+          alert('Failed to import project. Please check the file format.');
+        }
+      };
+      
+      reader.readAsText(file);
+    };
+    
+    input.click();
   };
   
   // Change device preset
@@ -1407,9 +1566,9 @@ const WireframeGenerator = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-700"
+                    className="h-8 px-2 text-white font-medium hover:bg-primary/80"
                     onClick={connectToSitemap}
                   >
                     <Layers className="w-4 h-4 mr-1" />
@@ -1428,9 +1587,9 @@ const WireframeGenerator = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="default"
                     size="sm"
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-700"
+                    className="h-8 px-2 text-white font-medium hover:bg-primary/80"
                     onClick={saveProject}
                   >
                     <Save className="w-4 h-4 mr-1" />
@@ -1447,9 +1606,9 @@ const WireframeGenerator = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="default"
                     size="sm"
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-700"
+                    className="h-8 px-2 text-white font-medium hover:bg-primary/80"
                     onClick={loadProject}
                   >
                     <Upload className="w-4 h-4 mr-1" />
@@ -1466,9 +1625,9 @@ const WireframeGenerator = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="default"
                     size="sm"
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-700"
+                    className="h-8 px-2 text-white font-medium hover:bg-primary/80"
                     onClick={exportAsImage}
                     disabled={isExporting}
                   >
@@ -1488,9 +1647,9 @@ const WireframeGenerator = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
-                    className="h-8 px-2 text-gray-300 hover:text-white hover:bg-gray-700"
+                    className="h-8 px-2 text-white font-medium hover:bg-primary/80"
                     onClick={() => setShowCodeView(!showCodeView)}
                   >
                     <Code className="w-4 h-4 mr-1" />
@@ -1508,6 +1667,88 @@ const WireframeGenerator = () => {
         {/* Toolbar */}
         <div className="bg-white border-b px-4 py-2 flex items-center justify-between">
           <div className="flex items-center space-x-2">
+            {/* Project actions */}
+            <div className="flex items-center space-x-1 mr-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={loadProject}
+                    >
+                      <Folder className="w-4 h-4 mr-1" />
+                      Load
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Load from localStorage</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={loadProjectFromFile}
+                    >
+                      <Upload className="w-4 h-4 mr-1" />
+                      Import
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Import from file</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={saveProject}
+                    >
+                      <Save className="w-4 h-4 mr-1" />
+                      Save
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Save project</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={exportAsImage}
+                      disabled={isExporting}
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      Export
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Export as image</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            
+            <Separator orientation="vertical" className="h-6 bg-gray-200" />
+            
             {/* Device selection */}
             <Select value={activeDevice} onValueChange={changeDevicePreset}>
               <SelectTrigger className="w-40 h-8">
@@ -1638,9 +1879,9 @@ const WireframeGenerator = () => {
             {/* Page navigation */}
             <div className="flex items-center">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 bg-white/10 text-primary hover:bg-white/20"
                 onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex - 1))}
                 disabled={currentPageIndex === 0}
               >
@@ -1649,7 +1890,7 @@ const WireframeGenerator = () => {
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 px-2">
+                  <Button variant="outline" className="h-8 px-2 bg-white/10 text-primary hover:bg-white/20">
                     <span className="mx-2">
                       Page {currentPageIndex + 1} of {pages.length}
                     </span>
@@ -1681,9 +1922,9 @@ const WireframeGenerator = () => {
               </DropdownMenu>
               
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 bg-white/10 text-primary hover:bg-white/20"
                 onClick={() => setCurrentPageIndex(Math.min(pages.length - 1, currentPageIndex + 1))}
                 disabled={currentPageIndex === pages.length - 1}
               >
@@ -1694,9 +1935,9 @@ const WireframeGenerator = () => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="h-8 px-2"
+                  className="h-8 px-2 bg-white/10 text-primary hover:bg-white/20"
                 >
                   <LayoutIcon className="w-4 h-4 mr-1" />
                   Page Settings
@@ -2118,4 +2359,4 @@ const WireframeGenerator = () => {
   );
 };
 
-export default WireframeGenerator; 
+export default WireframeGenerator;

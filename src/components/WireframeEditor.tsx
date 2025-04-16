@@ -19,6 +19,7 @@ import {
   Undo2, 
   Redo2, 
   Download, 
+  Upload,
   Save, 
   Grid as GridIcon,
   MousePointer,
@@ -194,6 +195,30 @@ const DraggableComponent = ({
     );
   };
   
+  // Add CSS for better text visibility on white backgrounds
+  useEffect(() => {
+    // Add a style tag if it doesn't exist
+    if (!document.getElementById('wireframe-text-styles')) {
+      const styleTag = document.createElement('style');
+      styleTag.id = 'wireframe-text-styles';
+      styleTag.innerHTML = `
+        .wireframe-text p, .wireframe-text div, .wireframe-text span {
+          color: #000000 !important;
+          text-shadow: 0px 0px 1px rgba(255,255,255,0.5);
+        }
+      `;
+      document.head.appendChild(styleTag);
+    }
+    
+    return () => {
+      // Clean up on unmount
+      const styleTag = document.getElementById('wireframe-text-styles');
+      if (styleTag) {
+        document.head.removeChild(styleTag);
+      }
+    };
+  }, []);
+  
   // Render different components based on type
   const renderComponent = () => {
     switch (type) {
@@ -210,7 +235,7 @@ const DraggableComponent = ({
         );
       case 'text':
         return (
-          <div className="w-full h-full p-2">
+          <div className="w-full h-full p-2 wireframe-text">
             <p className="text-gray-800">{content || 'Text block. Double-click to edit.'}</p>
           </div>
         );
@@ -677,16 +702,28 @@ const WireframeEditor: React.FC<WireframeEditorProps> = ({ initialComponents = [
         logging: false,
         backgroundColor: 'white'
       }).then(canvas => {
-        // Convert to image and download
-        const image = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = 'wireframe-export.png';
-        link.href = image;
-        link.click();
-        
-        // Clean up
-        document.body.removeChild(clone);
+        try {
+          // Convert to image and download
+          const image = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = 'wireframe-export.png';
+          link.href = image;
+          document.body.appendChild(link); // Append to body to ensure it works in all browsers
+          link.click();
+          document.body.removeChild(link);
+          
+          // Clean up
+          document.body.removeChild(clone);
+        } catch (error) {
+          console.error('Error exporting wireframe:', error);
+          alert('Failed to export wireframe. Please try again.');
+          document.body.removeChild(clone);
+        }
       });
+    }).catch(error => {
+      console.error('Error loading html2canvas:', error);
+      alert('Failed to load export functionality. Please try again.');
+      document.body.removeChild(clone);
     });
   };
   
@@ -696,6 +733,57 @@ const WireframeEditor: React.FC<WireframeEditorProps> = ({ initialComponents = [
     if (onSave) {
       onSave(components);
     }
+    
+    // Also offer to download as JSON file
+    const dataStr = JSON.stringify(components, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.download = 'wireframe-components.json';
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up the URL object
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  };
+  
+  // Import wireframe from file
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          const importedComponents = JSON.parse(content) as DropItemProps[];
+          
+          setComponents(importedComponents);
+          setHistory([...history, importedComponents]);
+          setHistoryIndex(history.length);
+          
+          // Also save to localStorage
+          localStorage.setItem('wireframe-components', content);
+          
+          alert('Wireframe imported successfully!');
+        } catch (error) {
+          console.error('Error importing wireframe:', error);
+          alert('Failed to import wireframe. Please check the file format.');
+        }
+      };
+      
+      reader.readAsText(file);
+    };
+    
+    input.click();
   };
   
   // Load from local storage if no initial components
@@ -785,6 +873,15 @@ const WireframeEditor: React.FC<WireframeEditorProps> = ({ initialComponents = [
           <div className="text-lg font-bold">Wireframe Editor</div>
           
           <div className="flex items-center space-x-2">
+            <button 
+              className="px-3 py-1 rounded hover:bg-gray-700"
+              onClick={handleImport}
+            >
+              <div className="flex items-center">
+                <Upload size={16} className="mr-1" />
+                <span>Import</span>
+              </div>
+            </button>
             <button 
               className="px-3 py-1 rounded hover:bg-gray-700"
               onClick={handleExport}
@@ -884,4 +981,4 @@ const WireframeEditor: React.FC<WireframeEditorProps> = ({ initialComponents = [
   );
 };
 
-export default WireframeEditor; 
+export default WireframeEditor;
