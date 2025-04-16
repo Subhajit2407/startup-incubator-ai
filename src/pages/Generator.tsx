@@ -1,9 +1,19 @@
-
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { ImplementationContext } from "../App";
 import Layout from "@/components/layout/Layout";
 import IdeaGeneratorSection from "@/components/sections/IdeaGeneratorSection";
 import { motion } from "framer-motion";
 
 const Generator = () => {
+  const navigate = useNavigate();
+  const { setImplementationPrompt } = useContext(ImplementationContext);
+
+  const handleNavigateToSitemap = (prompt: string) => {
+    setImplementationPrompt(prompt);
+    navigate("/sitemap");
+  };
+
   return (
     <Layout>
       <div className="relative min-h-screen w-full bg-[#030303] overflow-hidden pt-16">
@@ -26,7 +36,7 @@ const Generator = () => {
             </p>
           </motion.div>
           
-          <IdeaGeneratorSection />
+          <IdeaGeneratorSection onNavigateToSitemap={handleNavigateToSitemap} />
         </div>
         
         <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/30 pointer-events-none" />

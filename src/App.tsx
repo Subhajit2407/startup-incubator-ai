@@ -1,34 +1,37 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createContext, useState } from 'react';
+import Index from './pages/Index';
+import Generator from './pages/Generator';
+import SitemapGenerator from './pages/SitemapGenerator';
+import WireframeGenerator from './pages/WireframeGenerator';
+import NotFound from './pages/NotFound';
+import './App.css';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Generator from "./pages/Generator";
-import SitemapGenerator from "./pages/SitemapGenerator"; 
-import Pricing from "./pages/Pricing";
-import NotFound from "./pages/NotFound";
+// Create a context for sharing the implementation prompt
+export const ImplementationContext = createContext<{
+  implementationPrompt: string;
+  setImplementationPrompt: (prompt: string) => void;
+}>({
+  implementationPrompt: '',
+  setImplementationPrompt: () => {},
+});
 
-const queryClient = new QueryClient();
+function App() {
+  const [implementationPrompt, setImplementationPrompt] = useState('');
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+  return (
+    <ImplementationContext.Provider value={{ implementationPrompt, setImplementationPrompt }}>
+      <Router>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/generator" element={<Generator />} />
-          <Route path="/sitemap-generator" element={<SitemapGenerator />} />
-          <Route path="/pricing" element={<Pricing />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/sitemap" element={<SitemapGenerator />} />
+          <Route path="/wireframe" element={<WireframeGenerator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </Router>
+    </ImplementationContext.Provider>
+  );
+}
 
 export default App;
